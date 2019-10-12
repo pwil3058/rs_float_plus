@@ -18,7 +18,7 @@ macro_rules! assert_approx_eq {
 
 use num_traits::float::*;
 
-pub trait FloatPlus: Float {
+pub trait FloatPlus: Float + FloatApproxEq<Self> {
     /// Approximate number of significant digits in base 10.
     const DIGITS: u32;
     /// Machine epsilon value for `FloatPlus`.
@@ -216,7 +216,7 @@ impl FloatPlus for f32 {
     const SQRT_2: Self = std::f32::consts::SQRT_2;
 }
 
-pub trait FloatApproxEq<F: FloatPlus> {
+pub trait FloatApproxEq<F: FloatPlus>: std::cmp::PartialEq {
     const DEFAULT_MAX_ABS_DIFF: F = F::EPSILON;
     const DEFAULT_MAX_REL_DIFF: F = F::EPSILON;
 
@@ -224,6 +224,9 @@ pub trait FloatApproxEq<F: FloatPlus> {
     fn rel_diff_scale_factor(&self, other: &Self) -> F;
 
     fn approx_eq(&self, other: &Self, max_abs_diff: Option<F>, max_rel_diff: Option<F>) -> bool {
+        if self.eq(other) {
+            return true;
+        }
         let max_abs_diff = if let Some(max_abs_diff) = max_abs_diff {
             max_abs_diff
         } else {
@@ -271,6 +274,12 @@ mod tests {
 
     #[derive(Debug)]
     struct WrappedFloat<F: FloatPlus>(F);
+
+    impl<F: FloatPlus> std::cmp::PartialEq for WrappedFloat<F> {
+        fn eq(&self, other: &Self) -> bool {
+            self.0.eq(&other.0)
+        }
+    }
 
     impl<F: FloatPlus + std::fmt::Debug> FloatApproxEq<F> for WrappedFloat<F> {
         fn abs_diff(&self, other: &Self) -> F {
