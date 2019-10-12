@@ -198,19 +198,64 @@ impl FloatPlus for f32 {
     const SQRT_2: Self = std::f32::consts::SQRT_2;
 }
 
+pub trait FloatApproxEq<F: FloatPlus> {
+    const DEFAULT_MAX_ABS_DIFF: F = F::EPSILON;
+    const DEFAULT_MAX_REL_DIFF: F = F::EPSILON;
+
+    fn abs_diff(&self, other: &Self) -> F;
+    fn rel_diff_scale_factor(&self, other: &Self) -> F;
+
+    fn approx_eq(&self, other: &Self, max_abs_diff: Option<F>, max_rel_diff: Option<F>) -> bool {
+        let max_abs_diff = if let Some(max_abs_diff) = max_abs_diff {
+            max_abs_diff
+        } else {
+            Self::DEFAULT_MAX_ABS_DIFF
+        };
+        let abs_diff = self.abs_diff(other);
+        if abs_diff <= max_abs_diff {
+            return true;
+        }
+        let max_rel_diff = if let Some(max_rel_diff) = max_rel_diff {
+            max_rel_diff
+        } else {
+            Self::DEFAULT_MAX_REL_DIFF
+        };
+        if abs_diff <= max_rel_diff * self.rel_diff_scale_factor(other) {
+            return true;
+        }
+        false
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
 
     struct WrappedFloat<F: FloatPlus>(F);
 
+    impl<F: FloatPlus + std::fmt::Debug> FloatApproxEq<F> for WrappedFloat<F> {
+        fn abs_diff(&self, other: &Self) -> F {
+            (self.0 - other.0).abs()
+        }
+
+        fn rel_diff_scale_factor(&self, other: &Self) -> F {
+            self.0.abs().max(other.0.abs())
+        }
+    }
+
     #[test]
     fn f64_works() {
-        let _f = WrappedFloat::<f64>(0.0);
+        let sum = WrappedFloat::<f64>(0.1 + 0.1 + 0.1 + 0.1 + 0.1 + 0.1 + 0.1 + 0.1 + 0.1 + 0.1);
+        let mul = WrappedFloat::<f64>(0.1 * 10.0);
+        assert!(sum.approx_eq(&mul, None, None));
+        assert_ne!(sum.0, mul.0);
     }
 
     #[test]
     fn f32_works() {
-        let _f = WrappedFloat::<f32>(0.0);
+        let sum = WrappedFloat::<f32>(0.1 + 0.1 + 0.1 + 0.1 + 0.1 + 0.1 + 0.1 + 0.1 + 0.1 + 0.1);
+        let mul = WrappedFloat::<f32>(0.1 * 10.0);
+        assert!(sum.approx_eq(&mul, None, None));
+        assert_ne!(sum.0, mul.0);
     }
 }
