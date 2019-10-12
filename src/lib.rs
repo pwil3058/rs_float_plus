@@ -1,3 +1,21 @@
+// Copyright 2019 Peter Williams <pwil3058@gmail.com> <pwil3058@bigpond.net.au>
+#[macro_export]
+macro_rules! assert_approx_eq {
+    ($left:expr, $right:expr) => {{
+        match (&$left, &$right) {
+            (left_val, right_val) => {
+                if !(*left_val).approx_eq(&*right_val, None, None) {
+                    panic!(
+                        "assertion failed: `left.approx_eq(right)` \
+                         (left: `{:?}`, right: `{:?}`)",
+                        &*left_val, &*right_val
+                    )
+                }
+            }
+        }
+    }};
+}
+
 use num_traits::float::*;
 
 pub trait FloatPlus: Float {
@@ -227,10 +245,31 @@ pub trait FloatApproxEq<F: FloatPlus> {
     }
 }
 
+impl FloatApproxEq<f64> for f64 {
+    fn abs_diff(&self, other: &Self) -> f64 {
+        (self - other).abs()
+    }
+
+    fn rel_diff_scale_factor(&self, other: &Self) -> f64 {
+        self.abs().max(other.abs())
+    }
+}
+
+impl FloatApproxEq<f32> for f32 {
+    fn abs_diff(&self, other: &Self) -> f32 {
+        (self - other).abs()
+    }
+
+    fn rel_diff_scale_factor(&self, other: &Self) -> f32 {
+        self.abs().max(other.abs())
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
 
+    #[derive(Debug)]
     struct WrappedFloat<F: FloatPlus>(F);
 
     impl<F: FloatPlus + std::fmt::Debug> FloatApproxEq<F> for WrappedFloat<F> {
@@ -245,17 +284,43 @@ mod tests {
 
     #[test]
     fn f64_works() {
-        let sum = WrappedFloat::<f64>(0.1 + 0.1 + 0.1 + 0.1 + 0.1 + 0.1 + 0.1 + 0.1 + 0.1 + 0.1);
-        let mul = WrappedFloat::<f64>(0.1 * 10.0);
-        assert!(sum.approx_eq(&mul, None, None));
-        assert_ne!(sum.0, mul.0);
+        assert_approx_eq!(
+            10.0_f64 * 0.1,
+            0.1 + 0.1 + 0.1 + 0.1 + 0.1 + 0.1 + 0.1 + 0.1 + 0.1 + 0.1
+        );
+        assert_ne!(
+            10.0_f64 * 0.1,
+            0.1 + 0.1 + 0.1 + 0.1 + 0.1 + 0.1 + 0.1 + 0.1 + 0.1 + 0.1
+        );
     }
 
     #[test]
     fn f32_works() {
+        assert_approx_eq!(
+            10.0_f32 * 0.1,
+            0.1 + 0.1 + 0.1 + 0.1 + 0.1 + 0.1 + 0.1 + 0.1 + 0.1 + 0.1
+        );
+        assert_ne!(
+            10.0_f32 * 0.1,
+            0.1 + 0.1 + 0.1 + 0.1 + 0.1 + 0.1 + 0.1 + 0.1 + 0.1 + 0.1
+        );
+    }
+
+    #[test]
+    fn wrapped_f64_works() {
+        let sum = WrappedFloat::<f64>(0.1 + 0.1 + 0.1 + 0.1 + 0.1 + 0.1 + 0.1 + 0.1 + 0.1 + 0.1);
+        let mul = WrappedFloat::<f64>(0.1 * 10.0);
+        assert!(sum.approx_eq(&mul, None, None));
+        assert_approx_eq!(sum, mul);
+        assert_ne!(sum.0, mul.0);
+    }
+
+    #[test]
+    fn wrapped_f32_works() {
         let sum = WrappedFloat::<f32>(0.1 + 0.1 + 0.1 + 0.1 + 0.1 + 0.1 + 0.1 + 0.1 + 0.1 + 0.1);
         let mul = WrappedFloat::<f32>(0.1 * 10.0);
         assert!(sum.approx_eq(&mul, None, None));
+        assert_approx_eq!(sum, mul);
         assert_ne!(sum.0, mul.0);
     }
 }
