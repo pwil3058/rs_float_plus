@@ -4,7 +4,7 @@ macro_rules! assert_approx_eq {
     ($left:expr, $right:expr) => {{
         match (&$left, &$right) {
             (left_val, right_val) => {
-                if !(*left_val).approx_eq(&*right_val, None, None) {
+                if !(*left_val).approx_eq(&*right_val, None) {
                     panic!(
                         "assertion failed: `left.approx_eq(right)` \
                          (left: `{:?}`, right: `{:?}`)",
@@ -20,7 +20,7 @@ macro_rules! assert_approx_eq {
     ($left:expr, $right:expr, $max_diff:expr) => {{
         match (&$left, &$right) {
             (left_val, right_val) => {
-                if !(*left_val).approx_eq(&*right_val, Some($max_diff), Some($max_diff)) {
+                if !(*left_val).approx_eq(&*right_val, Some($max_diff)) {
                     panic!(
                         "assertion failed: `left.approx_eq(right)` \
                          (left: `{:?}`, right: `{:?}`)",
@@ -40,7 +40,7 @@ macro_rules! assert_approx_ne {
     ($left:expr, $right:expr) => {{
         match (&$left, &$right) {
             (left_val, right_val) => {
-                if (*left_val).approx_eq(&*right_val, None, None) {
+                if (*left_val).approx_eq(&*right_val, None) {
                     panic!(
                         "assertion failed: `left.approx_eq(right)` \
                          (left: `{:?}`, right: `{:?}`)",
@@ -56,7 +56,7 @@ macro_rules! assert_approx_ne {
     ($left:expr, $right:expr, $max_diff:expr) => {{
         match (&$left, &$right) {
             (left_val, right_val) => {
-                if (*left_val).approx_eq(&*right_val, Some($max_diff), Some($max_diff)) {
+                if (*left_val).approx_eq(&*right_val, Some($max_diff)) {
                     panic!(
                         "assertion failed: `left.approx_eq(right)` \
                          (left: `{:?}`, right: `{:?}`)",
@@ -272,31 +272,25 @@ impl FloatPlus for f32 {
 }
 
 pub trait FloatApproxEq<F: FloatPlus>: std::cmp::PartialEq {
-    const DEFAULT_MAX_ABS_DIFF: F = F::EPSILON;
-    const DEFAULT_MAX_REL_DIFF: F = F::EPSILON;
+    const DEFAULT_MAX_DIFF: F = F::EPSILON;
 
     fn abs_diff(&self, other: &Self) -> F;
     fn rel_diff_scale_factor(&self, other: &Self) -> F;
 
-    fn approx_eq(&self, other: &Self, max_abs_diff: Option<F>, max_rel_diff: Option<F>) -> bool {
+    fn approx_eq(&self, other: &Self, max_diff: Option<F>) -> bool {
         if self.eq(other) {
             return true;
         }
-        let max_abs_diff = if let Some(max_abs_diff) = max_abs_diff {
-            max_abs_diff
+        let max_diff = if let Some(max_diff) = max_diff {
+            max_diff
         } else {
-            Self::DEFAULT_MAX_ABS_DIFF
+            Self::DEFAULT_MAX_DIFF
         };
         let abs_diff = self.abs_diff(other);
-        if abs_diff <= max_abs_diff {
+        if abs_diff <= max_diff {
             return true;
         }
-        let max_rel_diff = if let Some(max_rel_diff) = max_rel_diff {
-            max_rel_diff
-        } else {
-            Self::DEFAULT_MAX_REL_DIFF
-        };
-        if abs_diff <= max_rel_diff * self.rel_diff_scale_factor(other) {
+        if abs_diff <= max_diff * self.rel_diff_scale_factor(other) {
             return true;
         }
         false
@@ -374,7 +368,7 @@ mod tests {
     fn wrapped_f64_works() {
         let sum = WrappedFloat::<f64>(0.1 + 0.1 + 0.1 + 0.1 + 0.1 + 0.1 + 0.1 + 0.1 + 0.1 + 0.1);
         let mul = WrappedFloat::<f64>(0.1 * 10.0);
-        assert!(sum.approx_eq(&mul, None, None));
+        assert!(sum.approx_eq(&mul, None));
         assert_approx_eq!(sum, mul);
         assert_ne!(sum.0, mul.0);
     }
@@ -383,7 +377,7 @@ mod tests {
     fn wrapped_f32_works() {
         let sum = WrappedFloat::<f32>(0.1 + 0.1 + 0.1 + 0.1 + 0.1 + 0.1 + 0.1 + 0.1 + 0.1 + 0.1);
         let mul = WrappedFloat::<f32>(0.1 * 10.0);
-        assert!(sum.approx_eq(&mul, None, None));
+        assert!(sum.approx_eq(&mul, None));
         assert_approx_eq!(sum, mul);
         assert_ne!(sum.0, mul.0);
     }
