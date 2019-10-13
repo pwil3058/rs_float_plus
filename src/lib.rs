@@ -14,6 +14,25 @@ macro_rules! assert_approx_eq {
             }
         }
     }};
+    ($left:expr, $right:expr,) => {{
+        $crate::assert_approx_eq!($left, $right)
+    }};
+    ($left:expr, $right:expr, $max_diff:expr) => {{
+        match (&$left, &$right) {
+            (left_val, right_val) => {
+                if !(*left_val).approx_eq(&*right_val, Some($max_diff), Some($max_diff)) {
+                    panic!(
+                        "assertion failed: `left.approx_eq(right)` \
+                         (left: `{:?}`, right: `{:?}`)",
+                        &*left_val, &*right_val
+                    )
+                }
+            }
+        }
+    }};
+    ($left:expr, $right:expr, $max_diff:expr,) => {{
+        $crate::assert_approx_eq!($left, $right, $max_diff)
+    }};
 }
 
 #[macro_export]
@@ -30,6 +49,25 @@ macro_rules! assert_approx_ne {
                 }
             }
         }
+    }};
+    ($left:expr, $right:expr,) => {{
+        $crate::assert_approx_ne!($left, $right)
+    }};
+    ($left:expr, $right:expr, $max_diff:expr) => {{
+        match (&$left, &$right) {
+            (left_val, right_val) => {
+                if (*left_val).approx_eq(&*right_val, Some($max_diff), Some($max_diff)) {
+                    panic!(
+                        "assertion failed: `left.approx_eq(right)` \
+                         (left: `{:?}`, right: `{:?}`)",
+                        &*left_val, &*right_val
+                    )
+                }
+            }
+        }
+    }};
+    ($left:expr, $right:expr, $max_diff:expr,) => {{
+        $crate::assert_approx_ne!($left, $right, $max_diff)
     }};
 }
 
