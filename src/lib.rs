@@ -16,9 +16,26 @@ macro_rules! assert_approx_eq {
     }};
 }
 
-use num_traits::float::*;
+#[macro_export]
+macro_rules! assert_approx_ne {
+    ($left:expr, $right:expr) => {{
+        match (&$left, &$right) {
+            (left_val, right_val) => {
+                if (*left_val).approx_eq(&*right_val, None, None) {
+                    panic!(
+                        "assertion failed: `left.approx_eq(right)` \
+                         (left: `{:?}`, right: `{:?}`)",
+                        &*left_val, &*right_val
+                    )
+                }
+            }
+        }
+    }};
+}
 
-pub trait FloatPlus: Float + FloatApproxEq<Self> {
+pub use num_traits::{float::*, NumAssignOps, NumOps};
+
+pub trait FloatPlus: Float + NumOps + NumAssignOps + FloatApproxEq<Self> {
     /// Approximate number of significant digits in base 10.
     const DIGITS: u32;
     /// Machine epsilon value for `FloatPlus`.
