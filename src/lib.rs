@@ -137,6 +137,16 @@ pub trait FloatPlus: Float + NumOps + NumAssignOps + FloatApproxEq<Self> {
     const PI: Self;
     /// sqrt(2)
     const SQRT_2: Self;
+
+    /// Other values useful in generic float code
+    const ZERO: Self;
+    const ONE: Self;
+    const NEG_ONE: Self;
+    const TWO: Self;
+    const HALF: Self;
+    const THREE: Self;
+    const SQRT_3: Self;
+    const TWO_PI: Self;
 }
 
 impl FloatPlus for f64 {
@@ -203,6 +213,16 @@ impl FloatPlus for f64 {
     const PI: Self = std::f64::consts::PI;
     /// sqrt(2)
     const SQRT_2: Self = std::f64::consts::SQRT_2;
+
+    /// Other values useful in generic float code
+    const ZERO: Self = 0.0;
+    const ONE: Self = 1.0;
+    const NEG_ONE: Self = -1.0;
+    const TWO: Self = 2.0;
+    const HALF: Self = 0.5;
+    const THREE: Self = 3.0;
+    const SQRT_3: Self = 1.73205_08075_68878;
+    const TWO_PI: Self = std::f64::consts::PI * 2.0;
 }
 
 impl FloatPlus for f32 {
@@ -269,6 +289,16 @@ impl FloatPlus for f32 {
     const PI: Self = std::f32::consts::PI;
     /// sqrt(2)
     const SQRT_2: Self = std::f32::consts::SQRT_2;
+
+    /// Other values useful in generic float code
+    const ZERO: Self = 0.0;
+    const ONE: Self = 1.0;
+    const NEG_ONE: Self = -1.0;
+    const TWO: Self = 2.0;
+    const HALF: Self = 0.5;
+    const THREE: Self = 3.0;
+    const SQRT_3: Self = 1.73205_08075_68878;
+    const TWO_PI: Self = std::f32::consts::PI * 2.0;
 }
 
 pub trait FloatApproxEq<F: FloatPlus>: std::cmp::PartialEq {
