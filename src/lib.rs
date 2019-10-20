@@ -71,9 +71,11 @@ macro_rules! assert_approx_ne {
     }};
 }
 
-pub use num_traits::{float::*, NumAssignOps, NumOps};
+pub use num_traits::{cast::*, float::*, NumAssignOps, NumOps};
 
-pub trait FloatPlus: Float + NumOps + NumAssignOps + FloatApproxEq<Self> {
+pub trait FloatPlus:
+    Float + NumOps + NumAssignOps + NumCast + FromPrimitive + FloatApproxEq<Self>
+{
     /// Approximate number of significant digits in base 10.
     const DIGITS: u32;
     /// Machine epsilon value for `FloatPlus`.
