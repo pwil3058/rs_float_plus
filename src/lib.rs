@@ -299,7 +299,7 @@ impl FloatPlus for f32 {
     const TWO: Self = 2.0;
     const HALF: Self = 0.5;
     const THREE: Self = 3.0;
-    const SQRT_3: Self = 1.73205_08075_68878;
+    const SQRT_3: Self = 1.732_050_8;
     const TWO_PI: Self = std::f32::consts::PI * 2.0;
 }
 
