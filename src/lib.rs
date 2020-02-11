@@ -1,6 +1,7 @@
 // Copyright 2020 Peter Williams <pwil3058@gmail.com> <pwil3058@bigpond.net.au>
 ///! Traits to make numeric generic code easier to implement
 pub mod float_plus;
+pub mod unsigned_plus;
 
 /// Constants that are applicable to numbers in general
 pub trait NumberConstants {
