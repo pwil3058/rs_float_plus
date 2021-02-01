@@ -306,8 +306,13 @@ impl FloatPlus for f32 {
 pub trait FloatApproxEq<F: FloatPlus>: std::cmp::PartialEq {
     const DEFAULT_MAX_DIFF: F = F::EPSILON;
 
-    fn abs_diff(&self, other: &Self) -> F;
-    fn rel_diff_scale_factor(&self, other: &Self) -> F;
+    fn abs_diff(&self, _other: &Self) -> F {
+        F::MAX
+    }
+
+    fn rel_diff_scale_factor(&self, _other: &Self) -> F {
+        F::ONE
+    }
 
     fn approx_eq(&self, other: &Self, max_diff: Option<F>) -> bool {
         if self.eq(other) {
