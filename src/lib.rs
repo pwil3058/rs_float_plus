@@ -1,6 +1,6 @@
 // Copyright 2020 Peter Williams <pwil3058@gmail.com> <pwil3058@bigpond.net.au>
 ///! Traits to make numeric generic code easier to implement
-pub use num_traits;
+use num_traits;
 
 pub mod float_plus;
 pub mod unsigned_plus;

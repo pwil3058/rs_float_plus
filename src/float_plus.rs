@@ -71,7 +71,7 @@ macro_rules! assert_approx_ne {
     }};
 }
 
-pub use crate::num_traits::{cast::*, float::*, NumAssignOps, NumOps};
+use crate::num_traits::{cast::*, float::*, NumAssignOps, NumOps};
 
 pub trait FloatPlus:
     Float + NumOps + NumAssignOps + NumCast + FromPrimitive + FloatApproxEq<Self>
