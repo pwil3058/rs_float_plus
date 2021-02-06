@@ -73,11 +73,13 @@ macro_rules! assert_approx_ne {
 
 use num_traits::{cast::*, float::*, NumAssignOps, NumOps};
 
+use crate::NumberConstants;
+
 pub trait FloatPlus:
-    Float + NumOps + NumAssignOps + NumCast + FromPrimitive + FloatApproxEq<Self>
+    NumberConstants + Float + NumOps + NumAssignOps + NumCast + FromPrimitive + FloatApproxEq<Self>
 {
     /// Approximate number of significant digits in base 10.
-    const DIGITS: u32;
+    //const DIGITS: u32;
     /// Machine epsilon value for `FloatPlus`.
     const EPSILON: Self;
     /// Infinity (∞).
@@ -85,13 +87,13 @@ pub trait FloatPlus:
     /// Number of significant digits in base 2.
     const MANTISSA_DIGITS: u32;
     /// Largest finite `FloatPlus` value.
-    const MAX: Self;
+    ///const MAX: Self;
     /// Maximum possible power of 10 exponent.
     const MAX_10_EXP: i32;
     /// Maximum possible power of 2 exponent.
     const MAX_EXP: i32;
     /// Smallest finite `FloatPlus` value.
-    const MIN: Self;
+    ///const MIN: Self;
     /// Minimum possible normal power of 10 exponent.
     const MIN_10_EXP: i32;
     /// One greater than the minimum possible normal power of 2 exponent.
@@ -141,19 +143,35 @@ pub trait FloatPlus:
     const SQRT_2: Self;
 
     /// Other values useful in generic float code
-    const ZERO: Self;
-    const ONE: Self;
+    //const ZERO: Self;
+    //const ONE: Self;
     const NEG_ONE: Self;
-    const TWO: Self;
+    //const TWO: Self;
     const HALF: Self;
-    const THREE: Self;
+    //const THREE: Self;
     const SQRT_3: Self;
     const TWO_PI: Self;
 }
 
-impl FloatPlus for f64 {
+impl NumberConstants for f64 {
+    const BYTES: usize = 8;
     /// Approximate number of significant digits in base 10.
     const DIGITS: u32 = std::f64::DIGITS;
+    /// Largest finite value for this type.
+    const MAX: Self = std::f64::MAX;
+    /// Smallest finite value for this type.
+    const MIN: Self = std::f64::MIN;
+
+    /// Other values useful in generic code
+    const ZERO: Self = 0.0;
+    const ONE: Self = 1.0;
+    const TWO: Self = 2.0;
+    const THREE: Self = 3.0;
+}
+
+impl FloatPlus for f64 {
+    /// Approximate number of significant digits in base 10.
+    //const DIGITS: u32 = std::f64::DIGITS;
     /// Machine epsilon value for `FloatPlus`.
     const EPSILON: Self = std::f64::EPSILON;
     /// Infinity (∞).
@@ -161,13 +179,13 @@ impl FloatPlus for f64 {
     /// Number of significant digits in base 2.
     const MANTISSA_DIGITS: u32 = std::f64::MANTISSA_DIGITS;
     /// Largest finite `FloatPlus` value.
-    const MAX: Self = std::f64::MAX;
+    //const MAX: Self = std::f64::MAX;
     /// Maximum possible power of 10 exponent.
     const MAX_10_EXP: i32 = std::f64::MAX_10_EXP;
     /// Maximum possible power of 2 exponent.
     const MAX_EXP: i32 = std::f64::MAX_EXP;
     /// Smallest finite `FloatPlus` value.
-    const MIN: Self = std::f64::MIN;
+    //const MIN: Self = std::f64::MIN;
     /// Minimum possible normal power of 10 exponent.
     const MIN_10_EXP: i32 = std::f64::MIN_10_EXP;
     /// One greater than the minimum possible normal power of 2 exponent.
@@ -217,19 +235,35 @@ impl FloatPlus for f64 {
     const SQRT_2: Self = std::f64::consts::SQRT_2;
 
     /// Other values useful in generic float code
-    const ZERO: Self = 0.0;
-    const ONE: Self = 1.0;
+    //const ZERO: Self = 0.0;
+    //const ONE: Self = 1.0;
     const NEG_ONE: Self = -1.0;
-    const TWO: Self = 2.0;
+    //const TWO: Self = 2.0;
     const HALF: Self = 0.5;
-    const THREE: Self = 3.0;
+    //const THREE: Self = 3.0;
     const SQRT_3: Self = 1.73205_08075_68878;
     const TWO_PI: Self = std::f64::consts::PI * 2.0;
 }
 
-impl FloatPlus for f32 {
+impl NumberConstants for f32 {
+    const BYTES: usize = 4;
     /// Approximate number of significant digits in base 10.
     const DIGITS: u32 = std::f32::DIGITS;
+    /// Largest finite value for this type.
+    const MAX: Self = std::f32::MAX;
+    /// Smallest finite value for this type.
+    const MIN: Self = std::f32::MIN;
+
+    /// Other values useful in generic code
+    const ZERO: Self = 0.0;
+    const ONE: Self = 1.0;
+    const TWO: Self = 2.0;
+    const THREE: Self = 3.0;
+}
+
+impl FloatPlus for f32 {
+    /// Approximate number of significant digits in base 10.
+    ///const DIGITS: u32 = std::f32::DIGITS;
     /// Machine epsilon value for `FloatPlus`.
     const EPSILON: Self = std::f32::EPSILON;
     /// Infinity (∞).
@@ -237,13 +271,13 @@ impl FloatPlus for f32 {
     /// Number of significant digits in base 2.
     const MANTISSA_DIGITS: u32 = std::f32::MANTISSA_DIGITS;
     /// Largest finite `FloatPlus` value.
-    const MAX: Self = std::f32::MAX;
+    ///const MAX: Self = std::f32::MAX;
     /// Maximum possible power of 10 exponent.
     const MAX_10_EXP: i32 = std::f32::MAX_10_EXP;
     /// Maximum possible power of 2 exponent.
     const MAX_EXP: i32 = std::f32::MAX_EXP;
     /// Smallest finite `FloatPlus` value.
-    const MIN: Self = std::f32::MIN;
+    ///const MIN: Self = std::f32::MIN;
     /// Minimum possible normal power of 10 exponent.
     const MIN_10_EXP: i32 = std::f32::MIN_10_EXP;
     /// One greater than the minimum possible normal power of 2 exponent.
@@ -293,12 +327,12 @@ impl FloatPlus for f32 {
     const SQRT_2: Self = std::f32::consts::SQRT_2;
 
     /// Other values useful in generic float code
-    const ZERO: Self = 0.0;
-    const ONE: Self = 1.0;
+    //const ZERO: Self = 0.0;
+    //const ONE: Self = 1.0;
     const NEG_ONE: Self = -1.0;
-    const TWO: Self = 2.0;
+    //const TWO: Self = 2.0;
     const HALF: Self = 0.5;
-    const THREE: Self = 3.0;
+    //const THREE: Self = 3.0;
     const SQRT_3: Self = 1.732_050_8;
     const TWO_PI: Self = std::f32::consts::PI * 2.0;
 }
@@ -375,6 +409,41 @@ mod tests {
         fn rel_diff_scale_factor(&self, other: &Self) -> F {
             self.0.abs().max(other.0.abs())
         }
+    }
+
+    #[test]
+    fn test_for_duplicaton() {
+        // const BYTES: u32 = 8;
+        // /// Approximate number of significant digits in base 10.
+        // const DIGITS: u32 = std::f32::DIGITS;
+        // /// Largest finite value for this type.
+        // const MAX: Self = std::f32::MAX;
+        // /// Smallest finite value for this type.
+        // const MIN: Self = std::f32::MIN;
+        //
+        // /// Other values useful in generic code
+        // const ZERO: Self = 0.0;
+        // const ONE: Self = 1.0;
+        // const TWO: Self = 2.0;
+        // const THREE: Self = 3.0;
+
+        assert_eq!(f64::ZERO, 0.0);
+        assert_eq!(f64::ONE, 1.0);
+        assert_eq!(f64::TWO, 2.0);
+        assert_eq!(f64::THREE, 3.0);
+        assert_eq!(f64::DIGITS, std::f64::DIGITS);
+        assert_eq!(f64::BYTES, 8);
+        assert_eq!(f64::MAX, std::f64::MAX);
+        assert_eq!(f64::MIN, std::f64::MIN);
+
+        assert_eq!(f32::ZERO, 0.0);
+        assert_eq!(f32::ONE, 1.0);
+        assert_eq!(f32::TWO, 2.0);
+        assert_eq!(f32::THREE, 3.0);
+        assert_eq!(f32::DIGITS, std::f32::DIGITS);
+        assert_eq!(f32::BYTES, 4);
+        assert_eq!(f32::MAX, std::f32::MAX);
+        assert_eq!(f32::MIN, std::f32::MIN);
     }
 
     #[test]
