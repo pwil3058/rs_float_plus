@@ -38,22 +38,22 @@ macro_rules! assert_approx_eq {
 #[macro_export]
 macro_rules! debug_assert_approx_eq {
     ($left:expr, $right:expr) => {{
-        if cfg!(debug) {
+        if cfg!(debug_assertions) {
             $crate::assert_approx_eq!($left, $right)
         }
     }};
     ($left:expr, $right:expr,) => {{
-        if cfg!(debug) {
+        if cfg!(debug_assertions) {
             $crate::assert_approx_eq!($left, $right)
         }
     }};
     ($left:expr, $right:expr, $max_diff:expr) => {{
-        if cfg!(debug) {
+        if cfg!(debug_assertions) {
             $crate::assert_approx_eq!($left, $right, $max_diff: expr)
         }
     }};
     ($left:expr, $right:expr, $max_diff:expr,) => {{
-        if cfg!(debug) {
+        if cfg!(debug_assertions) {
             $crate::assert_approx_eq!($left, $right, $max_diff)
         }
     }};
